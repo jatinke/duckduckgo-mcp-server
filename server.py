@@ -207,7 +207,16 @@ class WebContentFetcher:
 
 
 # Initialize FastMCP server
-mcp = FastMCP("ddg-search")
+# Get port from Render (falls back to 8000 if not set)
+render_port = int(os.environ.get("PORT", 8000))
+
+# Initialize FastMCP server with correct host and port
+mcp = FastMCP(
+    name="ddg-search",
+    host="0.0.0.0",       # IMPORTANT for external access on Render
+    port=render_port,     # Uses dynamic port provided by Render
+    streamable_http_path="/mcp"  # Optional: override default path
+)
 searcher = DuckDuckGoSearcher()
 fetcher = WebContentFetcher()
 
@@ -244,13 +253,7 @@ async def fetch_content(url: str, ctx: Context) -> str:
 
 def main():
 
-    port = int(os.environ.get("PORT", 8000))
-    mcp.run(
-        transport="streamable-http",
-        mount_path="/mcp",
-        host="0.0.0.0",
-        port=port
-    )
+    mcp.run(transport="streamable-http", mount_path="/mcp")
 
 
 if __name__ == "__main__":
