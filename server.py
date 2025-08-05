@@ -10,6 +10,7 @@ import asyncio
 from datetime import datetime, timedelta
 import time
 import re
+import os
 
 
 @dataclass
@@ -242,8 +243,16 @@ async def fetch_content(url: str, ctx: Context) -> str:
 
 
 def main():
-    mcp.run(transport="streamable-http", mount_path="/mcp")
+
+    port = int(os.environ.get("PORT", 8000))
+    mcp.run(
+        transport="streamable-http",
+        mount_path="/mcp",
+        host="0.0.0.0",
+        port=port
+    )
 
 
 if __name__ == "__main__":
+
     main()
